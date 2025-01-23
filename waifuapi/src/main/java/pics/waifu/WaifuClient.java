@@ -1,34 +1,57 @@
 package pics.waifu;
 
-import pics.waifu.Constants;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 public class WaifuClient {
-    
-    public void downloadImage(String rating, String type) {
 
+    public void downloadImage(String rating, String type) {
+        try {
+            String imageUrl = getURL(rating, type);
+            if (imageUrl.isEmpty()) {
+                System.err.println("Failed to fetch the image URL.");
+                return;
+            }
+
+            // Extract file name from the URL
+            URI uri = URI.create(imageUrl);
+            String fileName = Paths.get(uri.getPath()).getFileName().toString();
+
+            // Create path for Downloads folder
+            Path downloadPath = Paths.get(System.getProperty("user.home"), "Downloads", fileName);
+
+            // Download and save the file
+            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+            try (BufferedInputStream inputStream = new BufferedInputStream(connection.getInputStream())) {
+                Files.copy(inputStream, downloadPath);
+                System.out.println("Image downloaded successfully to: " + downloadPath);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private String getURL(String rating, String type) {
         try {
-            URL url = new URL(String.format("%s/%s/%s", Constants.BaseURL, rating, type));
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
+            URI uri = new URI(String.format("%s/%s/%s", Constants.BaseURL, rating, type));
+            HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
+            connection.setRequestMethod("GET");
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-
-            JSONObject json = new JSONObject(reader.readLine());
-
-            return json.getString("url");
-        } catch (Exception ignored) {}
-
+            try (BufferedInputStream inputStream = new BufferedInputStream(connection.getInputStream())) {
+                String response = new String(inputStream.readAllBytes());
+                JSONObject json = new JSONObject(response);
+                return json.getString("url");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return "";
     }
 }

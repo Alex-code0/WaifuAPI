@@ -1,33 +1,33 @@
 package pics.waifu;
 
 public class Endpoints {
-    public enum sfw {
-        waifu,
-        neko,
-        shinobu,
-        megumin,
-        bully,
-        cry,
-        hug,
-        kiss,
-        lick,
-        pat,
-        smug,
-        highfive,
-        nom,
-        bite,
-        slap,
-        happy,
-        wink,
-        poke,
-        dance,
-        cringe,
-        blush
+    public enum SFW {
+        WAIFU,
+        NEKO,
+        SHINOBU,
+        MEGUMIN,
+        BULLY,
+        CRY,
+        HUG,
+        KISS,
+        LICK,
+        PAT,
+        SMUG,
+        HIGHFIVE,
+        NOM,
+        BITE,
+        SLAP,
+        HAPPY,
+        WINK,
+        POKE,
+        DANCE,
+        CRINGE,
+        BLUSH
     }
-    public enum nsfw {
-        waifu,
-        neko,
-        trap,
-        blowjob
+    public enum NSFW {
+        WAIFU,
+        NEKO,
+        TRAP,
+        BLOWJOB
     }
 }
